@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --font-sans: "Avenir Next", "Segoe UI", "Helvetica Neue", "Noto Sans",
+    "Liberation Sans", sans-serif;
+  --font-display: "Iowan Old Style", "Palatino Linotype", "Book Antiqua",
+    "Times New Roman", serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+  background: #f7f1eb;
+  color: #1c1917;
+}
+
+::selection {
+  background: rgba(41, 37, 36, 0.14);
+}
+
+/* ─── Декоративные фигуры ────────────────────────────────────────
+   Схема:
+   1. Родитель секции: position:relative + overflow:hidden
+   2. Фигуры: position:absolute + z-index:0
+      → поверх фона секции, но НИЖЕ контента (.section-inner)
+   3. .section-inner: position:relative + z-index:1 + isolation:isolate
+      → создаёт свой stacking context поверх фигур
+      → клики и текст всегда работают
+──────────────────────────────────────────────────────────────────── */
+[class*="ornament-"] {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.section-inner {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+}
+
+.ornament-blob {
+  border-radius: 38% 62% 65% 35% / 35% 36% 64% 65%;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.78), transparent 38%),
+    linear-gradient(135deg, rgba(225, 213, 197, 0.95), rgba(205, 186, 165, 0.5));
+  filter: blur(0.5px);
+}
+
+.ornament-wave {
+  background-image: url("data:image/svg+xml,%3Csvg width='420' height='180' viewBox='0 0 420 180' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 120C49 120 49 66 96 66C143 66 143 120 190 120C237 120 237 66 284 66C331 66 331 120 378 120C392 120 404 115 418 109' stroke='%23c6b39d' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpath d='M2 146C49 146 49 92 96 92C143 92 143 146 190 146C237 146 237 92 284 92C331 92 331 146 378 146C392 146 404 141 418 135' stroke='%23d6c7b8' stroke-width='1.5' stroke-linecap='round' stroke-dasharray='3 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.ornament-wave-dark {
+  filter: brightness(0.86) saturate(0.8);
+}
+
+.wave-ornament-dark {
+  filter: brightness(0.86) saturate(0.8);
+}
+
+/* ─── Dotted-путь: статичный фоллбек при prefers-reduced-motion ────────
+   В нормальном режиме stroke-dashoffset управляется через
+   Framer Motion MotionValue (привязка к скроллу).
+   При отключённых анимациях Framer Motion останавливает style-привязки
+   — дотчатая линия просто станет статичной — этого достаточно.
+──────────────────────────────────────────────────────────────────── */
+.wave-dotted-path {
+  stroke-dashoffset: 0;
+}
+
+.ornament-rings {
+  border-radius: 9999px;
+  border: 1px solid rgba(167, 139, 113, 0.3);
+  box-shadow:
+    inset 0 0 0 18px rgba(255, 255, 255, 0),
+    0 0 0 18px rgba(213, 196, 177, 0.18),
+    0 0 0 40px rgba(213, 196, 177, 0.1);
+}
+
+.ornament-mesh {
+  background-image:
+    linear-gradient(rgba(176, 151, 126, 0.22) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(176, 151, 126, 0.22) 1px, transparent 1px);
+  background-size: 14px 14px;
+  mask-image: radial-gradient(circle at center, black 46%, transparent 74%);
+  -webkit-mask-image: radial-gradient(circle at center, black 46%, transparent 74%);
+}
