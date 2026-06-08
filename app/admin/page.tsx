@@ -3,16 +3,17 @@ import { AdminDashboard } from "@/components/admin/admin-dashboard";
 
 export const metadata = { title: "Панель администратора" };
 
-export default function AdminPage({
+export default async function AdminPage({
   searchParams,
 }: {
-  searchParams: { auth?: string };
+  searchParams: Promise<{ auth?: string }>;
 }) {
-  const isAuthed = searchParams.auth === process.env.ADMIN_PASSWORD;
+  const { auth } = await searchParams;
+  const isAuthed = auth === process.env.ADMIN_PASSWORD;
 
   if (!isAuthed) {
     redirect("/admin/login");
   }
 
-  return <AdminDashboard authToken={searchParams.auth!} />;
+  return <AdminDashboard authToken={auth!} />;
 }
