@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+// Минимальная дата — сегодня (серверная проверка)
+function getTodayISO() {
+  return new Date().toISOString().split("T")[0];
+}
+
 export const bookingSchema = z.object({
   name: z
     .string()
@@ -8,11 +13,18 @@ export const bookingSchema = z.object({
   phone: z
     .string()
     .regex(
-      /^[\+]?[7|8]?[\s\-]?\(?[0-9]{3}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/,
+      /^\+?[78][\s\-]?\(?\d{3}\)?[\s\-]?\d{3}[\s\-]?\d{2}[\s\-]?\d{2}$/,
       "Введите корректный номер телефона"
     ),
   service: z.string().min(1, "Выберите услугу"),
-  preferred_date: z.string().optional(),
+  preferred_date: z
+    .string()
+    .date("Введите корректную дату")
+    .refine(
+      (date) => date >= getTodayISO(),
+      "Дата не может быть в прошлом"
+    )
+    .optional(),
   preferred_time: z.string().optional(),
   comment: z.string().max(500, "Комментарий слишком длинный").optional(),
 });

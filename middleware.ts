@@ -1,15 +1,20 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+const ADMIN_COOKIE = "admin_session";
+
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Защищаем только /admin (не /admin/login и не /api)
-  if (pathname === "/admin" || pathname.startsWith("/admin/") && !pathname.startsWith("/admin/login")) {
-    const authParam = req.nextUrl.searchParams.get("auth");
+  // Защищаем /admin и все подпути, кроме /admin/login
+  if (
+    pathname === "/admin" ||
+    (pathname.startsWith("/admin/") && !pathname.startsWith("/admin/login"))
+  ) {
+    const sessionCookie = req.cookies.get(ADMIN_COOKIE)?.value;
     const adminPassword = process.env.ADMIN_PASSWORD;
 
-    if (!adminPassword || authParam !== adminPassword) {
+    if (!adminPassword || sessionCookie !== adminPassword) {
       return NextResponse.redirect(new URL("/admin/login", req.url));
     }
   }

@@ -21,17 +21,18 @@ export async function sendTelegramNotification(booking: Booking) {
 
   const time = booking.preferred_time ?? "не указано";
 
+  // parse_mode: MarkdownV2 — экранирование обязательно для всех спецсимволов
   const text = [
     `📋 *Новая запись в салон*`,
     ``,
-    `👤 *Имя:* ${escapeMarkdown(booking.name)}`,
-    `📞 *Телефон:* ${escapeMarkdown(booking.phone)}`,
-    `💅 *Услуга:* ${escapeMarkdown(booking.service)}`,
-    `📅 *Дата:* ${date}`,
-    `🕐 *Время:* ${time}`,
-    booking.comment ? `💬 *Комментарий:* ${escapeMarkdown(booking.comment)}` : null,
+    `👤 *Имя:* ${escapeMarkdownV2(booking.name)}`,
+    `📞 *Телефон:* ${escapeMarkdownV2(booking.phone)}`,
+    `💅 *Услуга:* ${escapeMarkdownV2(booking.service)}`,
+    `📅 *Дата:* ${escapeMarkdownV2(date)}`,
+    `🕐 *Время:* ${escapeMarkdownV2(time)}`,
+    booking.comment ? `💬 *Комментарий:* ${escapeMarkdownV2(booking.comment)}` : null,
     ``,
-    `🔖 *Статус:* ${STATUS_LABELS[booking.status] ?? booking.status}`,
+    `🔖 *Статус:* ${STATUS_LABELS[booking.status] ?? escapeMarkdownV2(booking.status)}`,
     `🆔 ID: \`${booking.id}\``,
   ]
     .filter(Boolean)
@@ -45,7 +46,7 @@ export async function sendTelegramNotification(booking: Booking) {
       body: JSON.stringify({
         chat_id: chatId,
         text,
-        parse_mode: "Markdown",
+        parse_mode: "MarkdownV2",
       }),
     }
   );
@@ -56,6 +57,10 @@ export async function sendTelegramNotification(booking: Booking) {
   }
 }
 
-function escapeMarkdown(text: string): string {
-  return text.replace(/[_*[\]()~`>#+\-=|{}.!]/g, "\\$&");
+/**
+ * Экранирует все спецсимволы для Telegram MarkdownV2.
+ * Список из официальной документации Bot API.
+ */
+function escapeMarkdownV2(text: string): string {
+  return text.replace(/[_*[\]()~`>#+\-=|{}.!\\]/g, "\\$&");
 }

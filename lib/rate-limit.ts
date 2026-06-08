@@ -1,7 +1,11 @@
 /**
  * Простой in-memory rate limiter для API-маршрутов.
  * Ограничивает количество запросов с одного IP.
- * Для production лучше использовать Redis (Upstash).
+ *
+ * ⚠️  ВАЖНО: In-memory хранилище не работает корректно на serverless-платформах
+ * (Vercel, AWS Lambda), где каждый запрос может попасть в новый изолированный инстанс.
+ * Для production-нагрузок замените на Redis/Upstash:
+ * https://upstash.com/docs/redis/sdks/ratelimit
  */
 
 const requests = new Map<string, { count: number; resetAt: number }>();
